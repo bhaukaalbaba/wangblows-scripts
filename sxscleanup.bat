@@ -67,17 +67,19 @@ if !errorlevel! neq 0 (
 goto :main_menu
 
 :silent_mode
-@echo on
-echo !timestamp!: Running silent mode... >> %log_file%
-Dism.exe /online /Cleanup-Image /StartComponentCleanup >> %log_file% 2>&1
-Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase >> %log_file% 2>&1
-Dism.exe /online /Cleanup-Image /SPSuperseded >> %log_file% 2>&1
-if !errorlevel! neq 0 (
-    echo !timestamp!: Failed to run one or more tasks in silent mode. See %log_file% for details.
-    pause
-    goto :eof
+set /p display_output="Display output? (y/n): "
+if "!display_output!"=="y" (
+    @echo on
+    Dism.exe /online /Cleanup-Image /StartComponentCleanup
+    Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+    Dism.exe /online /Cleanup-Image /SPSuperseded
+    @echo off
+) else (
+    @echo off
+    Dism.exe /online /Cleanup-Image /StartComponentCleanup > NUL
+    Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase > NUL
+    Dism.exe /online /Cleanup-Image /SPSuperseded > NUL
 )
-@echo off
 goto :eof
 
 :show_help
